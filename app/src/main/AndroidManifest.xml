@@ -10,17 +10,17 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MisLugares">
-        <activity android:name=".AcercaDeActivity"
+        <activity android:name=".presentacion.AcercaDeActivity"
             android:label="Acerca de ..."
             android:theme="@style/Theme.AppCompat.Light.Dialog"/>
 
-        <activity android:name=".PreferenciasActivity"
+        <activity android:name=".presentacion.PreferenciasActivity"
         android:label="Preferencias"
         android:theme="@style/Theme.AppCompat.Light.Dialog"/>
 
 
         <activity
-            android:name=".MainActivity"
+            android:name=".presentacion.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/Theme.MisLugares.NoActionBar">
             <intent-filter>

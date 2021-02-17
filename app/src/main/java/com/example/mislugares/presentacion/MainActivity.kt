@@ -1,4 +1,4 @@
-package com.example.mislugares
+package com.example.mislugares.presentacion
 
 import android.content.Intent
 import android.os.Bundle
@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import com.example.mislugares.R
 import kotlinx.android.synthetic.main.content_main.*
 
 

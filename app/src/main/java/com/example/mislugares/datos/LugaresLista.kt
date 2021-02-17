@@ -1,6 +1,5 @@
-package com.example.mislugares
-import java.util.ArrayList;
-import java.util.List;
+package com.example.mislugares.datos
+import com.example.mislugares.Lugar
 
 
 class LugaresLista : RepositorioLugares {
