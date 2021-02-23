@@ -1,4 +1,7 @@
-package com.example.mislugares
+package com.example.mislugares.modelo
+
+import com.example.mislugares.modelo.GeoPunto
+import com.example.mislugares.modelo.TipoLugar
 
 data class Lugar(val nombre: String,
                  var direccion: String = "",

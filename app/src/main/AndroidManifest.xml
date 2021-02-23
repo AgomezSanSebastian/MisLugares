@@ -18,6 +18,10 @@
         android:label="Preferencias"
         android:theme="@style/Theme.AppCompat.Light.Dialog"/>
 
+        <activity android:name=".presentacion.VistaLugarActivity"
+            android:label="Vista Lugar Activity"
+            android:theme="@style/Theme.AppCompat.Light.Dialog"/>
+
 
         <activity
             android:name=".presentacion.MainActivity"

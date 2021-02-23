@@ -2,18 +2,26 @@ package com.example.mislugares.presentacion
 
 import android.content.Intent
 import android.os.Bundle
-import com.google.android.material.appbar.CollapsingToolbarLayout
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.Snackbar
-import androidx.appcompat.app.AppCompatActivity
+import android.preference.PreferenceManager
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import com.example.mislugares.Aplicacion
 import com.example.mislugares.R
+import com.example.mislugares.casos_uso.CasosUsosActividades
+import com.example.mislugares.casos_uso.CasosUsosLugar
+import com.google.android.material.appbar.CollapsingToolbarLayout
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.content_main.*
 
 
 class MainActivity : AppCompatActivity() {
+
+    val usoActividades by lazy { CasosUsosActividades(this) }
+    val RESULTADO_PREFERENCIAS = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,11 +64,28 @@ class MainActivity : AppCompatActivity() {
                 true
             }
             R.id.action_settings -> {
-                lanzarPreferencias()
+                usoActividades.lanzarPreferencias(RESULTADO_PREFERENCIAS)
+                //lanzarPreferencias()
                 true
             }
+            R.id.menu_buscar -> {
+                lanzarVistaLugar()
+                true
+            }
+
+            /*R.id.menu_mapa -> {
+                usoActividades.lanzarMapa()
+                true
+            }*/
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    fun mostrarPreferencias(view: View?) {
+        val pref = PreferenceManager.getDefaultSharedPreferences(this)
+        val s = ("notificaciones: " + pref.getBoolean("notificaciones", true)
+                + ", máximo a listar: " + pref.getString("maximo", "?"))
+        Toast.makeText(this, s, Toast.LENGTH_SHORT).show()
     }
 
     fun lanzarAcercaDe(view: View? = null) {
@@ -76,5 +101,14 @@ class MainActivity : AppCompatActivity() {
     fun salir(view: View?) {
         finish();
     }
+
+    fun lanzarVistaLugar(view: View? = null) {
+        usoLugar.mostrar(0)
+    }
+
+
+    val lugares by lazy { (application as Aplicacion).lugares }
+    val usoLugar by lazy { CasosUsosLugar(this, lugares) }
+
 
 }
