@@ -6,8 +6,11 @@ import android.preference.PreferenceManager
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.EditText
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mislugares.Aplicacion
 import com.example.mislugares.R
 import com.example.mislugares.casos_uso.CasosUsosActividades
@@ -16,12 +19,17 @@ import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.content_main.*
+import java.lang.Integer.parseInt
 
 
 class MainActivity : AppCompatActivity() {
 
     val usoActividades by lazy { CasosUsosActividades(this) }
     val RESULTADO_PREFERENCIAS = 0
+    val adaptador by lazy { (application as Aplicacion).adaptador }
+    val usoLugar by lazy { CasosUsosLugar(this, lugares) }
+    val lugares by lazy { (application as Aplicacion).lugares }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,18 +41,46 @@ class MainActivity : AppCompatActivity() {
                     .setAction("Action", null).show()
         }
 
-        button02.setOnClickListener {
-            lanzarPreferencias()
-        }
-        button03.setOnClickListener {
-            lanzarAcercaDe()
+        Toast.makeText(this, "onCreate", Toast.LENGTH_SHORT).show()
+
+        recycler_view.apply {
+            setHasFixedSize(true)
+            layoutManager = LinearLayoutManager(this@MainActivity)
+            adapter = adaptador
         }
 
-        button04.setOnClickListener{
-            finish()
+        adaptador.onClick = {
+            val pos = recycler_view.getChildAdapterPosition(it)
+            usoLugar.mostrar(pos)
         }
 
     }
+
+    override fun onStart() {
+        super.onStart()
+        Toast.makeText(this, "onStart", Toast.LENGTH_SHORT).show()
+    }
+    override fun onResume() {
+        super.onResume()
+        Toast.makeText(this, "onResume", Toast.LENGTH_SHORT).show()
+    }
+    override fun onPause() {
+        Toast.makeText(this, "onPause", Toast.LENGTH_SHORT).show()
+        super.onPause()
+    }
+    override fun onStop() {
+        Toast.makeText(this, "onStop", Toast.LENGTH_SHORT).show()
+        super.onStop()
+    }
+    override fun onRestart() {
+        super.onRestart()
+        Toast.makeText(this, "onRestart", Toast.LENGTH_SHORT).show()
+    }
+    override fun onDestroy() {
+        Toast.makeText(this, "onDestroy", Toast.LENGTH_SHORT).show()
+        super.onDestroy()
+    }
+
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -102,13 +138,21 @@ class MainActivity : AppCompatActivity() {
         finish();
     }
 
+
     fun lanzarVistaLugar(view: View? = null) {
-        usoLugar.mostrar(0)
+        val entrada = EditText(this)
+        entrada.setText("0")
+        AlertDialog.Builder(this)
+                .setTitle("Selección de lugar")
+                .setMessage("indica su id:")
+                .setView(entrada)
+                .setPositiveButton("Ok") { dialog, whichButton ->
+                    val id = parseInt(entrada.text.toString())
+                    usoLugar.mostrar(id);
+                }
+                .setNegativeButton("Cancelar", null)
+                .show()
     }
-
-
-    val lugares by lazy { (application as Aplicacion).lugares }
-    val usoLugar by lazy { CasosUsosLugar(this, lugares) }
 
 
 }
