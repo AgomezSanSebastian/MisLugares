@@ -90,6 +90,7 @@ class MainActivity : AppCompatActivity() {
             R.id.menu_mapa -> {
                 startActivity(Intent(this, MapaActivity::class.java))
                 true;
+
             }
             else -> super.onOptionsItemSelected(item)
         }
@@ -153,6 +154,7 @@ class MainActivity : AppCompatActivity() {
             usoLocalizacion.permisoConcedido()
     }
 
+
     override fun onStart() {
         super.onStart()
         Toast.makeText(this, "onStart", Toast.LENGTH_SHORT).show()
@@ -178,7 +180,6 @@ class MainActivity : AppCompatActivity() {
         Toast.makeText(this, "onDestroy", Toast.LENGTH_SHORT).show()
         super.onDestroy()
     }
-
 
 
 }

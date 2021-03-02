@@ -20,6 +20,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 
 class MapaActivity: FragmentActivity(), OnMapReadyCallback {
     lateinit var mapa: GoogleMap
+
     val adaptador by lazy { (application as Aplicacion).adaptador }
 
     public override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,14 +40,18 @@ class MapaActivity: FragmentActivity(), OnMapReadyCallback {
             mapa.getUiSettings().setZoomControlsEnabled(true)
             mapa.getUiSettings().setCompassEnabled(true)
         }
+
         if ( adaptador.itemCount > 0) {
             val p = adaptador.lugarPosicion(0).posicion
+
             mapa.moveCamera(
                 CameraUpdateFactory.newLatLngZoom(
                 LatLng(p.latitud, p.longitud), 12F))
         }
+
         for (n in 0 until adaptador.itemCount) {
             val lugar = adaptador.lugarPosicion(n)
+
             val p = lugar.posicion
             if (p != null && p.latitud != 0.0) {
                 val iGrande = BitmapFactory.decodeResource(
@@ -64,8 +69,10 @@ class MapaActivity: FragmentActivity(), OnMapReadyCallback {
     }
 
     fun onInfoWindowClick(marker: Marker) {
+
         for (id in 0 until adaptador.itemCount) {
             if (adaptador.lugarPosicion(id).nombre == marker.title) {
+
                 val intent = Intent(this, VistaLugarActivity::class.java)
                 intent.putExtra("pos", id)
                 startActivity(intent)
