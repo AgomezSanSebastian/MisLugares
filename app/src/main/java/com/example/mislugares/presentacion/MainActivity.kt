@@ -1,6 +1,7 @@
 package com.example.mislugares.presentacion
 
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.view.Menu
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mislugares.Aplicacion
 import com.example.mislugares.R
 import com.example.mislugares.casos_uso.CasosUsosActividades
+import com.example.mislugares.casos_uso.CasosUsosLocalizacion
 import com.example.mislugares.casos_uso.CasosUsosLugar
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -24,11 +26,15 @@ import java.lang.Integer.parseInt
 
 class MainActivity : AppCompatActivity() {
 
+
     val usoActividades by lazy { CasosUsosActividades(this) }
     val RESULTADO_PREFERENCIAS = 0
     val adaptador by lazy { (application as Aplicacion).adaptador }
-    val usoLugar by lazy { CasosUsosLugar(this, lugares) }
+    val usoLugar by lazy { CasosUsosLugar(this, lugares , adaptador) }
     val lugares by lazy { (application as Aplicacion).lugares }
+    val SOLICITUD_PERMISO_LOCALIZACION = 1
+    val usoLocalizacion by lazy {
+        CasosUsosLocalizacion(this, SOLICITUD_PERMISO_LOCALIZACION) }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,9 +42,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById(R.id.toolbar))
         findViewById<CollapsingToolbarLayout>(R.id.toolbar_layout).title = title
-        findViewById<FloatingActionButton>(R.id.fab).setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
+        findViewById<FloatingActionButton>(R.id.fab).setOnClickListener {
+                view -> usoLugar.nuevo()
         }
 
         Toast.makeText(this, "onCreate", Toast.LENGTH_SHORT).show()
@@ -50,37 +55,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         adaptador.onClick = {
-            val pos = recycler_view.getChildAdapterPosition(it)
+            val pos = it.tag as Int
             usoLugar.mostrar(pos)
         }
 
     }
-
-    override fun onStart() {
-        super.onStart()
-        Toast.makeText(this, "onStart", Toast.LENGTH_SHORT).show()
-    }
-    override fun onResume() {
-        super.onResume()
-        Toast.makeText(this, "onResume", Toast.LENGTH_SHORT).show()
-    }
-    override fun onPause() {
-        Toast.makeText(this, "onPause", Toast.LENGTH_SHORT).show()
-        super.onPause()
-    }
-    override fun onStop() {
-        Toast.makeText(this, "onStop", Toast.LENGTH_SHORT).show()
-        super.onStop()
-    }
-    override fun onRestart() {
-        super.onRestart()
-        Toast.makeText(this, "onRestart", Toast.LENGTH_SHORT).show()
-    }
-    override fun onDestroy() {
-        Toast.makeText(this, "onDestroy", Toast.LENGTH_SHORT).show()
-        super.onDestroy()
-    }
-
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -108,16 +87,15 @@ class MainActivity : AppCompatActivity() {
                 lanzarVistaLugar()
                 true
             }
-
-            /*R.id.menu_mapa -> {
-                usoActividades.lanzarMapa()
-                true
-            }*/
+            R.id.menu_mapa -> {
+                startActivity(Intent(this, MapaActivity::class.java))
+                true;
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
 
-    fun mostrarPreferencias(view: View?) {
+    fun mostrarPreferencias(view: View? ) {
         val pref = PreferenceManager.getDefaultSharedPreferences(this)
         val s = ("notificaciones: " + pref.getBoolean("notificaciones", true)
                 + ", máximo a listar: " + pref.getString("maximo", "?"))
@@ -129,14 +107,25 @@ class MainActivity : AppCompatActivity() {
         startActivity(i)
     }
 
-    fun lanzarPreferencias(view: View? = null) {
-        val i = Intent(this, PreferenciasActivity::class.java)
-        startActivity(i)
-    }
+
 
     fun salir(view: View?) {
         finish();
     }
+
+
+    fun lanzarPreferencias(view: View? = null) = startActivityForResult(
+        Intent(this, PreferenciasActivity::class.java), RESULTADO_PREFERENCIAS)
+
+    override
+    fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == RESULTADO_PREFERENCIAS) {
+            adaptador.cursor = lugares.extraeCursor()
+            adaptador.notifyDataSetChanged()
+        }
+    }
+
 
 
     fun lanzarVistaLugar(view: View? = null) {
@@ -153,6 +142,43 @@ class MainActivity : AppCompatActivity() {
                 .setNegativeButton("Cancelar", null)
                 .show()
     }
+
+
+
+    override fun onRequestPermissionsResult(requestCode: Int,
+                                            permissions: Array<String>, grantResults: IntArray ) {
+        if (requestCode == SOLICITUD_PERMISO_LOCALIZACION
+                && grantResults.size == 1
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+            usoLocalizacion.permisoConcedido()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        Toast.makeText(this, "onStart", Toast.LENGTH_SHORT).show()
+    }
+    override fun onResume() {
+        super.onResume()
+        usoLocalizacion.activar()
+    }
+    override fun onPause() {
+        super.onPause()
+        usoLocalizacion.desactivar()
+
+    }
+    override fun onStop() {
+        Toast.makeText(this, "onStop", Toast.LENGTH_SHORT).show()
+        super.onStop()
+    }
+    override fun onRestart() {
+        super.onRestart()
+        Toast.makeText(this, "onRestart", Toast.LENGTH_SHORT).show()
+    }
+    override fun onDestroy() {
+        Toast.makeText(this, "onDestroy", Toast.LENGTH_SHORT).show()
+        super.onDestroy()
+    }
+
 
 
 }

@@ -1,6 +1,6 @@
 package com.example.mislugares.modelo
 
-data class GeoPunto(val longitud: Double, val latitud: Double) {
+data class GeoPunto(var longitud: Double, var latitud: Double) {
     companion object {
         val SIN_POSICION = GeoPunto(0.0,0.0)
     }

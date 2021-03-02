@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.mislugares.Aplicacion
@@ -20,11 +21,13 @@ import java.util.*
 
 class VistaLugarActivity : AppCompatActivity() {
     val lugares by lazy { (application as Aplicacion).lugares }
-    val usoLugar by lazy { CasosUsosLugar(this, lugares) }
+    val adaptador by lazy { (application as Aplicacion).adaptador }
+    val usoLugar by lazy { CasosUsosLugar(this, lugares, adaptador) }
     var pos = 0
     val RESULTADO_EDITAR = 1
     val RESULTADO_GALERIA = 2 //poner antes de la clase
     val RESULTADO_FOTO = 3
+    private var _id : Int = -1
     private lateinit var uriUltimaFoto: Uri
 
 
@@ -34,7 +37,8 @@ class VistaLugarActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.vista_lugar)
         pos = intent.extras?.getInt("pos", 0) ?: 0
-        lugar = lugares.elemento(pos)
+        _id = adaptador.idPosicion(pos)
+        lugar = adaptador.lugarPosicion (pos)
         actualizaVistas()
     }
 
@@ -54,7 +58,8 @@ class VistaLugarActivity : AppCompatActivity() {
             }
             R.id.accion_editar -> return true
             R.id.accion_borrar -> {
-                usoLugar.borrar(pos)
+                val _id = adaptador.idPosicion(pos)
+                usoLugar.borrar(_id)
                 return true
             }
             else -> return super.onOptionsItemSelected(item)
@@ -72,16 +77,24 @@ class VistaLugarActivity : AppCompatActivity() {
         fecha.text = DateFormat.getDateInstance().format(Date(lugar.fecha))
         hora.text = DateFormat.getTimeInstance().format(Date(lugar.fecha))
         valoracion.rating = lugar.valoracion
-        valoracion.setOnRatingBarChangeListener {
-            ratingBar, valor, fromUser -> lugar.valoracion = valor
+        valoracion.setOnRatingBarChangeListener { _, _, _ -> }
+        valoracion.setRating(lugar.valoracion)
+        valoracion.setOnRatingBarChangeListener {  _, valor, _ ->
+            lugar.valoracion = valor
+            usoLugar.actualizaPosLugar(pos, lugar)
+            pos = adaptador.posicionId(_id)
         }
         usoLugar.visualizarFoto(lugar, foto);
     }
+
 
     @SuppressLint("MissingSuperCall")
     override fun onActivityResult(requestCode: Int, resultCode: Int,
                                   data: Intent?) {
         if (requestCode == RESULTADO_EDITAR) {
+            lugar = lugares.elemento(_id)
+            pos = adaptador.posicionId(_id)
+            actualizaVistas()
             actualizaVistas()
             scrollView1.invalidate()
         } else if (requestCode == RESULTADO_GALERIA) {
@@ -97,18 +110,15 @@ class VistaLugarActivity : AppCompatActivity() {
             } else {
                 Toast.makeText(this, "Error en captura", Toast.LENGTH_LONG).show()
             }
-
         }
-
-        fun verMapa(view: View) = usoLugar.verMapa(lugar)
-        fun llamarTelefono(view: View) = usoLugar.llamarTelefono(lugar)
-        fun verPgWeb(view: View) = usoLugar.verPgWeb(lugar)
-        fun ponerDeGaleria(view: View) = usoLugar.ponerDeGaleria(RESULTADO_GALERIA)
-        fun tomarFoto(view: View) {
-            uriUltimaFoto = usoLugar.tomarFoto(RESULTADO_FOTO)!!
-        }
-        fun eliminarFoto(view: View) = usoLugar.ponerFoto(pos, "", foto)
-
-
     }
+
+    fun verMapa(view: View) = usoLugar.verMapa(lugar)
+    fun llamarTelefono(view: View) = usoLugar.llamarTelefono(lugar)
+    fun verPgWeb(view: View) = usoLugar.verPgWeb(lugar)
+    fun ponerDeGaleria(view: View) = usoLugar.ponerDeGaleria(RESULTADO_GALERIA)
+    fun tomarFoto(view: View) {
+        uriUltimaFoto = usoLugar.tomarFoto(RESULTADO_FOTO)!!
+    }
+    fun eliminarFoto(view: View) = usoLugar.ponerFoto(pos, "", foto)
 }

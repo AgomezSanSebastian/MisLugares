@@ -14,6 +14,9 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat.startActivityForResult
 import androidx.core.content.FileProvider
+import com.example.mislugares.Aplicacion
+import com.example.mislugares.datos.AdaptadorLugaresBD
+import com.example.mislugares.datos.LugaresBD
 import com.example.mislugares.datos.RepositorioLugares
 import com.example.mislugares.modelo.GeoPunto
 import com.example.mislugares.modelo.Lugar
@@ -27,7 +30,8 @@ import java.io.InputStream
 import java.net.URL
 
 class CasosUsosLugar (val actividad: Activity,
-                      val lugares: RepositorioLugares ){
+                      val lugares: LugaresBD,
+                      val adaptador: AdaptadorLugaresBD){
     // OPERACIONES BÁSICAS
     fun mostrar(pos: Int) {
         val i = Intent(actividad, VistaLugarActivity::class.java)
@@ -37,11 +41,15 @@ class CasosUsosLugar (val actividad: Activity,
 
     fun borrar(id: Int) {
         lugares.borrar(id)
+        adaptador.cursor = lugares.extraeCursor()
+        adaptador.notifyDataSetChanged()
         actividad.finish()
     }
 
     fun guardar(id: Int, nuevoLugar: Lugar) {
         lugares.actualiza(id, nuevoLugar)
+        adaptador.cursor = lugares.extraeCursor()
+        adaptador.notifyDataSetChanged()
     }
 
     fun editar(pos: Int, codidoSolicitud: Int) {
@@ -151,5 +159,25 @@ class CasosUsosLugar (val actividad: Activity,
             return null
         }
     }
+
+    fun actualizaPosLugar(pos: Int, lugar: Lugar) {
+        val id = adaptador.idPosicion(pos)
+        guardar(id, lugar); //
+    }
+
+    fun nuevo() {
+        val _id = lugares.nuevo()
+        val posicion = (actividad.application as Aplicacion).posicionActual
+        if (posicion != GeoPunto.SIN_POSICION) {
+            val lugar = lugares.elemento(_id)
+            lugar.posicion = posicion
+            lugares.actualiza(_id, lugar)
+        }
+        val i = Intent(actividad, EdicionLugarActivity::class.java)
+        i.putExtra("_id", _id)
+        actividad.startActivity(i)
+    }
+
+
 
 }
