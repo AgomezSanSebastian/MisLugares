@@ -5,8 +5,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.mislugares.Aplicacion
 import com.example.mislugares.R
 import com.example.mislugares.datos.RepositorioLugares
+import com.example.mislugares.modelo.GeoPunto
 import com.example.mislugares.modelo.Lugar
 import com.example.mislugares.modelo.TipoLugar
 import kotlinx.android.synthetic.main.elemento_lista.view.*
@@ -35,6 +37,16 @@ class AdaptadorLugares(private val lugares: RepositorioLugares) :
             foto.setScaleType(ImageView.ScaleType.FIT_END)
             valoracion.rating = lugar.valoracion
             setOnClickListener{ onClick(itemView)}
+
+            val pos = (context.applicationContext as Aplicacion).posicionActual
+            if (pos==GeoPunto.SIN_POSICION || lugar.posicion== GeoPunto.SIN_POSICION) {
+                distancia.text = "... Km"
+            } else {
+                val d = pos.distancia(lugar.posicion).toInt()
+                distancia.text = if (d < 2000) "$d m"
+                else "${(d / 1000)} Km"
+            }
+
         }
     }
 

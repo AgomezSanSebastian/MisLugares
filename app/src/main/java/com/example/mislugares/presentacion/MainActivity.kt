@@ -1,6 +1,7 @@
 package com.example.mislugares.presentacion
 
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.view.Menu
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mislugares.Aplicacion
 import com.example.mislugares.R
 import com.example.mislugares.casos_uso.CasosUsosActividades
+import com.example.mislugares.casos_uso.CasosUsosLocalizacion
 import com.example.mislugares.casos_uso.CasosUsosLugar
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -24,11 +26,15 @@ import java.lang.Integer.parseInt
 
 class MainActivity : AppCompatActivity() {
 
+
     val usoActividades by lazy { CasosUsosActividades(this) }
     val RESULTADO_PREFERENCIAS = 0
     val adaptador by lazy { (application as Aplicacion).adaptador }
     val usoLugar by lazy { CasosUsosLugar(this, lugares) }
     val lugares by lazy { (application as Aplicacion).lugares }
+    val SOLICITUD_PERMISO_LOCALIZACION = 1
+    val usoLocalizacion by lazy {
+        CasosUsosLocalizacion(this, SOLICITUD_PERMISO_LOCALIZACION) }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,11 +68,12 @@ class MainActivity : AppCompatActivity() {
     }
     override fun onResume() {
         super.onResume()
-        Toast.makeText(this, "onResume", Toast.LENGTH_SHORT).show()
+        usoLocalizacion.activar()
     }
     override fun onPause() {
-        Toast.makeText(this, "onPause", Toast.LENGTH_SHORT).show()
         super.onPause()
+        usoLocalizacion.desactivar()
+
     }
     override fun onStop() {
         Toast.makeText(this, "onStop", Toast.LENGTH_SHORT).show()
@@ -80,6 +87,9 @@ class MainActivity : AppCompatActivity() {
         Toast.makeText(this, "onDestroy", Toast.LENGTH_SHORT).show()
         super.onDestroy()
     }
+
+
+
 
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -108,11 +118,11 @@ class MainActivity : AppCompatActivity() {
                 lanzarVistaLugar()
                 true
             }
+            R.id.menu_mapa -> {
+                startActivity(Intent(this, MapaActivity::class.java))
+                true;
 
-            /*R.id.menu_mapa -> {
-                usoActividades.lanzarMapa()
-                true
-            }*/
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -153,6 +163,17 @@ class MainActivity : AppCompatActivity() {
                 .setNegativeButton("Cancelar", null)
                 .show()
     }
+
+
+
+    override fun onRequestPermissionsResult(requestCode: Int,
+                                            permissions: Array<String>, grantResults: IntArray ) {
+        if (requestCode == SOLICITUD_PERMISO_LOCALIZACION
+                && grantResults.size == 1
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+            usoLocalizacion.permisoConcedido()
+    }
+
 
 
 }
