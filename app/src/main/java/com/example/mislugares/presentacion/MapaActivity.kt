@@ -62,7 +62,7 @@ class MapaActivity: FragmentActivity(), OnMapReadyCallback {
         mapa.setOnInfoWindowClickListener(this);
     }
 
-    override fun onInfoWindowClick(marker: Marker) {
+    fun onInfoWindowClick(marker: Marker) {
         for (id in 0 until lugares.tamaño()) {
             if (lugares.elemento(id).nombre == marker.title) {
                 val intent = Intent(this, VistaLugarActivity::class.java)
