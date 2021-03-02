@@ -58,7 +58,7 @@ class EdicionLugarActivity : AppCompatActivity(){
     }
 
 
-    fun onOptionsItemSelected() {
+    /*fun onOptionsItemSelected() {
         val nuevoLugar = Lugar(nombre.text.toString(), direccion.text.toString(),
                 lugar.posicion, TipoLugar.values()[tipo.selectedItemPosition],
                 lugar.foto, Integer.parseInt(telefono.text.toString()),
@@ -67,7 +67,7 @@ class EdicionLugarActivity : AppCompatActivity(){
         usoLugar.guardar(_id, nuevoLugar)
         finish()
     }
-
+*/
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.getItemId()) {
             R.id.accion_cancelar -> {

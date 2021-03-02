@@ -71,6 +71,7 @@ class MapaActivity: FragmentActivity(), OnMapReadyCallback {
     fun onInfoWindowClick(marker: Marker) {
 
         for (id in 0 until adaptador.itemCount) {
+
             if (adaptador.lugarPosicion(id).nombre == marker.title) {
 
                 val intent = Intent(this, VistaLugarActivity::class.java)

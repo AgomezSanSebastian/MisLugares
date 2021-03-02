@@ -110,8 +110,8 @@ class LugaresBD(val contexto: Context) :
                 "tipo = ${tipoLugar.ordinal}, foto ='$foto', telefono =$telefono, "+
                 "url = '$url', comentario = '$comentarios', fecha = $fecha, " +
                 "valoracion = $valoracion WHERE _id = $id")
-
     }
+
     fun extraeLugar(cursor: Cursor) = Lugar(
         nombre = cursor.getString(1),
         direccion = cursor.getString(2),

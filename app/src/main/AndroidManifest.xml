@@ -24,11 +24,11 @@
 
         <activity android:name=".presentacion.VistaLugarActivity"
             android:label="Vista Lugar Activity"
-            android:theme="@style/Theme.AppCompat.Light.Dialog"/>
+            />
 
         <activity android:name=".presentacion.EdicionLugarActivity"
             android:label="Vista Edicion Activity"
-            android:theme="@style/Theme.AppCompat.Light.Dialog"/>
+         />
 
         <activity
             android:name=".presentacion.MainActivity"
@@ -36,7 +36,6 @@
             android:theme="@style/Theme.MisLugares.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
