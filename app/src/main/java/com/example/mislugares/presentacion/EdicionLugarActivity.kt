@@ -19,7 +19,7 @@ class EdicionLugarActivity : AppCompatActivity(){
     lateinit var lugar: Lugar
     val adaptador by lazy { (application as Aplicacion).adaptador }
     val lugares by lazy { (application as Aplicacion).lugares }
-    val usoLugar by lazy { CasosUsosLugar(this, lugares, adaptador) }
+    val usoLugar by lazy { CasosUsosLugar(this,null, lugares, adaptador) }
     var _id = -1
 
 
@@ -27,18 +27,11 @@ class EdicionLugarActivity : AppCompatActivity(){
         super.onCreate(savedInstanceState)
         setContentView(R.layout.edicion_lugar)
 
-        val adaptador = ArrayAdapter<String>(this,
-                android.R.layout.simple_spinner_item,
-                lugar.tipoLugar.getNombres()
-        )
-        adaptador.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        tipo.adapter = adaptador
-        tipo.setSelection(lugar.tipoLugar.ordinal)
-
         lugares.añadeEjemplos()
         pos = intent.extras?.getInt("pos", 0) ?: 0
         _id = intent.extras?.getInt("_id", -1) ?: -1
-        lugar = lugares.elemento(pos)
+        lugar = if (_id !== -1) lugares.elemento(_id)
+                else            adaptador.lugarPosicion(pos)
 
         actualizaVistas()
     }
@@ -50,6 +43,13 @@ class EdicionLugarActivity : AppCompatActivity(){
         telefono.setText (Integer.toString(lugar.telefono))
         url.setText(lugar.url)
         comentario.setText(lugar.comentarios)
+        val adaptador = ArrayAdapter<String>(this,
+                android.R.layout.simple_spinner_item,
+                lugar.tipoLugar.getNombres()
+        )
+        adaptador.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        tipo.adapter = adaptador
+        tipo.setSelection(lugar.tipoLugar.ordinal)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -88,8 +88,8 @@ class EdicionLugarActivity : AppCompatActivity(){
                     lugar.fecha,
                     lugar.valoracion
                 )
-                if (_id!=-1) lugares.borrar(_id)
-
+                if (_id == -1) _id = adaptador.idPosicion(pos)
+                usoLugar.guardar(_id, nuevoLugar)
                 finish()
                 return true
             }

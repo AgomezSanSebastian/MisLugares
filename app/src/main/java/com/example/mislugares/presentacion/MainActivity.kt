@@ -20,6 +20,7 @@ import com.example.mislugares.casos_uso.CasosUsosLugar
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
 import java.lang.Integer.parseInt
 
@@ -30,11 +31,12 @@ class MainActivity : AppCompatActivity() {
     val usoActividades by lazy { CasosUsosActividades(this) }
     val RESULTADO_PREFERENCIAS = 0
     val adaptador by lazy { (application as Aplicacion).adaptador }
-    val usoLugar by lazy { CasosUsosLugar(this, lugares , adaptador) }
+    val usoLugar by lazy { CasosUsosLugar(this, null, lugares , adaptador) }
     val lugares by lazy { (application as Aplicacion).lugares }
     val SOLICITUD_PERMISO_LOCALIZACION = 1
     val usoLocalizacion by lazy {
         CasosUsosLocalizacion(this, SOLICITUD_PERMISO_LOCALIZACION) }
+    val SOLICITUD_PERMISO_WRITE_CALL_LOG = 0
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,18 +48,18 @@ class MainActivity : AppCompatActivity() {
                 view -> usoLugar.nuevo()
         }
 
-        Toast.makeText(this, "onCreate", Toast.LENGTH_SHORT).show()
+//        Toast.makeText(this, "onCreate", Toast.LENGTH_SHORT).show()
+//
+//        recycler_view.apply {
+//            setHasFixedSize(true)
+//            layoutManager = LinearLayoutManager(this@MainActivity)
+//            adapter = adaptador
+//        }
 
-        recycler_view.apply {
-            setHasFixedSize(true)
-            layoutManager = LinearLayoutManager(this@MainActivity)
-            adapter = adaptador
-        }
-
-        adaptador.onClick = {
-            val pos = it.tag as Int
-            usoLugar.mostrar(pos)
-        }
+//        adaptador.onClick = {
+//            val pos = it.tag as Int
+//            usoLugar.mostrar(pos)
+//        }
 
     }
 
@@ -75,7 +77,7 @@ class MainActivity : AppCompatActivity() {
         return when (item.itemId) {
 
             R.id.acercaDe -> {
-                lanzarAcercaDe()
+                usoActividades.lanzarAcerdaDe()
                 true
             }
             R.id.action_settings -> {
@@ -88,7 +90,7 @@ class MainActivity : AppCompatActivity() {
                 true
             }
             R.id.menu_mapa -> {
-                startActivity(Intent(this, MapaActivity::class.java))
+                usoActividades.lanzarMapa()
                 true;
 
             }
@@ -124,6 +126,9 @@ class MainActivity : AppCompatActivity() {
         if (requestCode == RESULTADO_PREFERENCIAS) {
             adaptador.cursor = lugares.extraeCursor()
             adaptador.notifyDataSetChanged()
+            if (usoLugar.obtenerFragmentVista() != null)
+                usoLugar.mostrar(0);
+
         }
     }
 

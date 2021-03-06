@@ -10,7 +10,7 @@ import com.example.mislugares.presentacion.AdaptadorLugares
 class Aplicacion : Application() {
 
     val lugares = LugaresBD(this)
-    val adaptador by lazy { AdaptadorLugaresBD(lugares, lugares.extraeCursor()) }
+    val adaptador by lazy { AdaptadorLugaresBD(lugares, lugares.extraeCursor())  }
     val posicionActual = GeoPunto.SIN_POSICION
 
 

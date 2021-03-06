@@ -143,4 +143,6 @@ class LugaresBD(val contexto: Context) :
         return readableDatabase.rawQuery(consulta, null)
     }
 
+
+
 }

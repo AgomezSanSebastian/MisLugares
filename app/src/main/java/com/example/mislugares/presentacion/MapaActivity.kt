@@ -20,7 +20,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 
 class MapaActivity: FragmentActivity(), OnMapReadyCallback {
     lateinit var mapa: GoogleMap
-
+    val lugares by lazy { (application as Aplicacion).lugares }
     val adaptador by lazy { (application as Aplicacion).adaptador }
 
     public override fun onCreate(savedInstanceState: Bundle?) {
@@ -72,6 +72,8 @@ class MapaActivity: FragmentActivity(), OnMapReadyCallback {
 
         for (id in 0 until adaptador.itemCount) {
 
+            val lugar =  adaptador.lugarPosicion(id)
+
             if (adaptador.lugarPosicion(id).nombre == marker.title) {
 
                 val intent = Intent(this, VistaLugarActivity::class.java)
@@ -84,7 +86,6 @@ class MapaActivity: FragmentActivity(), OnMapReadyCallback {
 }
 
 private fun GoogleMap.setOnInfoWindowClickListener(mapaActivity: MapaActivity) {
-
 }
 
 

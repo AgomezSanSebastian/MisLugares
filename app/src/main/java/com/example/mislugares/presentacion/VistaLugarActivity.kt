@@ -22,7 +22,7 @@ import java.util.*
 class VistaLugarActivity : AppCompatActivity() {
     val lugares by lazy { (application as Aplicacion).lugares }
     val adaptador by lazy { (application as Aplicacion).adaptador }
-    val usoLugar by lazy { CasosUsosLugar(this, lugares, adaptador) }
+    val usoLugar by lazy { CasosUsosLugar(this,null, lugares, adaptador) }
     var pos = 0
     val RESULTADO_EDITAR = 1
     val RESULTADO_GALERIA = 2 //poner antes de la clase
@@ -35,7 +35,7 @@ class VistaLugarActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.vista_lugar)
+        setContentView(R.layout.activity_vista_lugar);
         pos = intent.extras?.getInt("pos", 0) ?: 0
         _id = adaptador.idPosicion(pos)
         lugar = adaptador.lugarPosicion (pos)
@@ -94,7 +94,6 @@ class VistaLugarActivity : AppCompatActivity() {
         if (requestCode == RESULTADO_EDITAR) {
             lugar = lugares.elemento(_id)
             pos = adaptador.posicionId(_id)
-            actualizaVistas()
             actualizaVistas()
             scrollView1.invalidate()
         } else if (requestCode == RESULTADO_GALERIA) {

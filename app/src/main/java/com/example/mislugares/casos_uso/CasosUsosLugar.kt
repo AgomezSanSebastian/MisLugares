@@ -14,36 +14,64 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat.startActivityForResult
 import androidx.core.content.FileProvider
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import com.example.mislugares.Aplicacion
+import com.example.mislugares.R
 import com.example.mislugares.datos.AdaptadorLugaresBD
 import com.example.mislugares.datos.LugaresBD
 import com.example.mislugares.datos.RepositorioLugares
 import com.example.mislugares.modelo.GeoPunto
 import com.example.mislugares.modelo.Lugar
-import com.example.mislugares.presentacion.AdaptadorLugares
-import com.example.mislugares.presentacion.EdicionLugarActivity
-import com.example.mislugares.presentacion.VistaLugarActivity
+import com.example.mislugares.presentacion.*
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.io.InputStream
 import java.net.URL
 
-class CasosUsosLugar (val actividad: Activity,
-                      val lugares: LugaresBD,
-                      val adaptador: AdaptadorLugaresBD){
+open class CasosUsosLugar(
+        open val actividad: FragmentActivity,
+        open val fragment: Fragment?,
+        open val lugares: LugaresBD,
+        open val adaptador: AdaptadorLugaresBD){
     // OPERACIONES BÁSICAS
+
+
     fun mostrar(pos: Int) {
-        val i = Intent(actividad, VistaLugarActivity::class.java)
-        i.putExtra("pos", pos);
-        actividad.startActivity(i);
+        var fragmentVista = obtenerFragmentVista()
+        if (fragmentVista != null) {
+            fragmentVista.pos = pos
+            fragmentVista.pos = adaptador.idPosicion(pos)
+            fragmentVista.actualizaVistas()
+        } else {
+            val i = Intent(actividad, VistaLugarActivity::class.java)
+            i.putExtra("pos", pos);
+            actividad.startActivity(i);
+        }
     }
+
+    fun obtenerFragmentVista(): VistaLugarFragment? {
+        val manejador = actividad.supportFragmentManager
+        return manejador.findFragmentById(R.id.vista_lugar_fragment) as
+                VistaLugarFragment?
+    }
+
 
     fun borrar(id: Int) {
         lugares.borrar(id)
         adaptador.cursor = lugares.extraeCursor()
         adaptador.notifyDataSetChanged()
-        actividad.finish()
+        if (obtenerFragmentSelector() == null) {
+            actividad.finish()
+        } else {
+            mostrar(0)
+        }
+    }
+
+    fun obtenerFragmentSelector(): SelectorFragment? {
+        val manejador = actividad.supportFragmentManager
+        return manejador.findFragmentById(R.id.selector_fragment) as SelectorFragment?
     }
 
     fun guardar(id: Int, nuevoLugar: Lugar) {
@@ -55,7 +83,8 @@ class CasosUsosLugar (val actividad: Activity,
     fun editar(pos: Int, codidoSolicitud: Int) {
         val i = Intent(actividad, EdicionLugarActivity::class.java)
         i.putExtra("pos", pos);
-        actividad.startActivityForResult(i, codidoSolicitud)
+        fragment?.startActivityForResult(i, codidoSolicitud)
+                ?:actividad.startActivityForResult(i, codidoSolicitud)
     }
 
     // INTENCIONES
@@ -89,13 +118,15 @@ class CasosUsosLugar (val actividad: Activity,
             type = "image/*"
         }
 
-        actividad.startActivityForResult(i, cod)
+        fragment?.startActivityForResult(i, cod)
+                ?:actividad.startActivityForResult(i, cod)
     }
 
     fun ponerFoto(pos: Int, uri: String?, imageView: ImageView) {
         val lugar = lugares.elemento(pos)
         lugar.foto = uri ?: ""
         visualizarFoto(lugar, imageView)
+        actualizaPosLugar(pos, lugar)
     }
 
     fun visualizarFoto(lugar: Lugar, imageView: ImageView) {
@@ -117,7 +148,8 @@ class CasosUsosLugar (val actividad: Activity,
             else Uri.fromFile(file)
             val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
             intent.putExtra(MediaStore.EXTRA_OUTPUT, uriUltimaFoto)
-            actividad.startActivityForResult(intent, codidoSolicitud)
+            fragment?.startActivityForResult(intent, codidoSolicitud)
+                    ?:actividad.startActivityForResult(intent, codidoSolicitud)
             return uriUltimaFoto
         } catch (ex: IOException) {
             Toast.makeText(actividad, "Error al crear fichero de imagen",
