@@ -6,6 +6,7 @@ import android.app.TimePickerDialog
 
 import android.os.Bundle
 import android.text.format.DateFormat
+import android.widget.DatePicker
 import android.widget.TextView
 import android.widget.TimePicker
 import androidx.fragment.app.DialogFragment
@@ -15,6 +16,7 @@ import com.example.mislugares.R
 import com.example.mislugares.datos.AdaptadorLugaresBD
 import com.example.mislugares.datos.LugaresBD
 import com.example.mislugares.modelo.Lugar
+import com.example.mislugares.presentacion.DialogoSelectorFecha
 import java.text.DateFormat.getTimeInstance
 
 import java.util.*
